@@ -23,6 +23,19 @@ import mathutils
         Return type:	
 
         mathutils.Vector or None
+
+     mathutils.geometry.distance_point_to_plane(pt, plane_co, plane_no)
+
+    Returns the signed distance between a point and a plane (negative when below the normal).
+    Parameters:	
+
+        pt (mathutils.Vector) – Point
+        plane_co (mathutils.Vector) – First point of the quad
+        plane_no (mathutils.Vector) – Second point of the quad
+
+    Return type:	
+
+    float
 """
 
 def export_map(context, filepath):    
@@ -63,11 +76,19 @@ def export_map(context, filepath):
         omesh.update(calc_tessface=True)
         for face in omesh.polygons:
             normal = face.normal
+            """
+            if WorldOrigin == normal: #this is a potential gamebreaker
+                point2 = normal*2
+            else:
+                point2 = normal
+   
             #vert = face.vertices[0]
             #intersect = mathutils.geometry.intersect_line_plane(WorldOrigin, normal, vert, normal, no_flip=False)
-            intersect = mathutils.geometry.intersect_line_plane(WorldOrigin, normal, face.vertices[0], normal, False)
+            intersect = mathutils.geometry.intersect_line_plane(WorldOrigin, point2, face.vertices[0], normal, False)
             #deltaWoI = intersect - WorldOrigin            
             dist = (intersect - WorldOrigin).lenght
+            """
+            dist = mathutils.geometry.distance_point_to_plane(WorldOrigin, face.vertices[0], normal)
             file.write('( %.16f %.16f %.16f %.16f ) ' % (normal[0], normal[1], normal[2], dist))
             file.write(' ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) )')
             file.write(' "textures/7318/concrete_01"')
