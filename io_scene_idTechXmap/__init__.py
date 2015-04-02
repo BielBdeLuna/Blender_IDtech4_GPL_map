@@ -3,32 +3,18 @@
 ## Biel Bestué de Luna
 
 bl_info = {
-    "name": "Export idTech GPL map",
+    "name": "Export idTechX map",
     "author": "Biel Bestué de Luna",
     "version": (0, 0, 0),
     "blender": (2, 70, 0),
     "location": "File > Import-Export",
-    "description": "Import-Export idTech GPL map levels",
+    "description": "Import-Export idTechX map levels",
     "warning": "",
     "wiki_url": "",
     "support": 'TESTING',
     "category": "Import-Export"
 }
 
-
-'''
-
-if "bpy" in locals():
-    import imp
-    if "import_map" in locals():
-        imp.reload(import_obj)
-    if "export_map" in locals():
-        imp.reload(export_obj)
-
-import bpy
-from bpy.props import StringProperty, FloatProperty, BoolProperty
-from bpy_extras.io_utils import ExportHelper
-'''
 if "bpy" in locals():
     import imp
     if "export_map" in locals():
@@ -42,9 +28,9 @@ from bpy_extras.io_utils import ExportHelper #this is the type of element open w
 from bpy_extras.io_utils import ImportHelper # for the future
 
 class export_map_helper(bpy.types.Operator, ExportHelper): #this class then inherits the ExportHelper capabilities
-    """Export level or selected to a idTech GPL map"""
+    """Export whole level or selected objects to a idTechX map"""
 
-    bl_idname = "export_scene.quake_map" #does this exist?
+    bl_idname = "export_scene.idtechx_map" #does this exist?
     bl_label = "Export Map"
     bl_options = {'PRESET'}
 
@@ -79,7 +65,7 @@ class export_map_helper(bpy.types.Operator, ExportHelper): #this class then inhe
     
 
 def ui_func(self, context):
-    self.layout.operator(export_map_helper.bl_idname, text="idTech GPL MAP (.map)")
+    self.layout.operator(export_map_helper.bl_idname, text="idTechX MAP (.map)")
 
 
 def register():
