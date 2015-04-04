@@ -4,39 +4,6 @@
 
 import bpy
 import mathutils
-#import math
-    
-"""
-     mathutils.geometry.intersect_line_plane(line_a, line_b, plane_co, plane_no, no_flip=False)
-
-        Calculate the intersection between a line (as 2 vectors) and a plane. Returns a vector for the intersection or None.
-        Parameters:	
-
-            line_a (mathutils.Vector) – First point of the first line
-            line_b (mathutils.Vector) – Second point of the first line
-            plane_co (mathutils.Vector) – A point on the plane
-            plane_no (mathutils.Vector) – The direction the plane is facing
-
-        Returns:	
-
-        The point of intersection or None when not found
-        Return type:	
-
-        mathutils.Vector or None
-
-     mathutils.geometry.distance_point_to_plane(pt, plane_co, plane_no)
-
-    Returns the signed distance between a point and a plane (negative when below the normal).
-    Parameters:	
-
-        pt (mathutils.Vector) – Point
-        plane_co (mathutils.Vector) – First point of the quad
-        plane_no (mathutils.Vector) – Second point of the quad
-
-    Return type:	
-
-    float
-"""
 
 def export_map(context, filepath):    
     import time
@@ -69,30 +36,19 @@ def export_map(context, filepath):
 
     print("starting with brushes")
     for obj in l_meshes:
-        file.write('// brush "%s", "%s"\n' % (obj.name, obj.data.name))
+        #file.write('// brush "%s", "%s"\n' % (obj.name, obj.data.name))
+        file.write('// brush "%s"\n' % (obj.name))
         file.write('{\n')
         file.write('brushDef3\n{\n')
         omesh = obj.to_mesh(scene, True, 'PREVIEW')
         omesh.update(calc_tessface=True)
         for face in omesh.polygons:
             normal = face.normal
-            """
-            if WorldOrigin == normal: #this is a potential gamebreaker
-                point2 = normal*2
-            else:
-                point2 = normal
-   
-            #vert = face.vertices[0]
-            #intersect = mathutils.geometry.intersect_line_plane(WorldOrigin, normal, vert, normal, no_flip=False)
-            intersect = mathutils.geometry.intersect_line_plane(WorldOrigin, point2, face.vertices[0], normal, False)
-            #deltaWoI = intersect - WorldOrigin            
-            dist = (intersect - WorldOrigin).lenght
-            """
-            dist = mathutils.geometry.distance_point_to_plane(WorldOrigin, face.vertices[0], normal)
+            dist = mathutils.geometry.distance_point_to_plane(WorldOrigin, (obj.matrix_world * obj.data.vertices[face.vertices[0]].co), normal) #this is lossy due floating point precision loss
             file.write('( %.16f %.16f %.16f %.16f ) ' % (normal[0], normal[1], normal[2], dist))
-            file.write(' ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) )')
-            file.write(' "textures/7318/concrete_01"')
-            file.write(' 0 0 0\n')
+            file.write(' ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) )') #TODO
+            file.write(' "textures/7318/concrete_01"') #TODO
+            file.write(' 0 0 0\n') #TOUNDERSTANDWHATTHEHELLDOESITDO
         file.write('}\n') #end of "brushDef3" function
         file.write('}\n') #end of brush "o"
     #for obj in l_surfes:
@@ -135,34 +91,3 @@ def save(operator,
     export_map(context, filepath)
 
     return {'FINISHED'}
-
-"""
-import bpy  
-      
-current_obj = bpy.context.active_object  
-      
-print("="*40) # printing marker  
-for polygon in current_obj.data.polygons:
-    verts_in_face = polygon.vertices[:]  
-    print("face index", polygon.index)  
-    print("normal", polygon.normal)  
-    for vert in verts_in_face:  
-        print("vert", vert, " vert co", current_obj.data.vertices[vert].co)  
-"""
-
-"""
-    - make a list of selected objects in the scene
-        - if there aren't selected obejcts in the scene gather them all in the list
-    - check if all their faces are coplanar?
-        - error if non complanar faces?
-    - for every object
-        - for every coplanar quad face
-            - gather normal
-            - find the shortest distance between the surface, in which the face is inscribed in, and the global centre
-            - figure out how to translate the UVmap to a global UV mapping
-            - write brush info in the *.map file
-        - get a solution for non coplanar quad faces?
-            - separate the two tris as if they where two different surfaces?
-                - i think non coplanar quad faces are not allowed in radiant
-            - are concave/convex surfaces a problem?
-"""
