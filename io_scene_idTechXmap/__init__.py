@@ -41,7 +41,7 @@ class export_map_helper(bpy.types.Operator, ExportHelper): #this class then inhe
             name="Scale",
             description="Scale everything by this value",
             min=0.01, max=1000.0,
-            default=100.0,
+            default=16.0,
     )
     grid_snap = BoolProperty(
             name="Grid Snap",
