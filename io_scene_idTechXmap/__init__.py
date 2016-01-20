@@ -5,7 +5,7 @@
 bl_info = {
     "name": "Export idTechX map",
     "author": "Biel Bestué de Luna",
-    "version": (0, 0, 0),
+    "version": (0, 0, 4),
     "blender": (2, 70, 0),
     "location": "File > Import-Export",
     "description": "Import-Export idTechX map levels",
