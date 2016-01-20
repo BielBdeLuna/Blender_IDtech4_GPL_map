@@ -9,7 +9,29 @@ entity_num = 0;
 brush_num = 0;
 surf_num = 0;
 
-def entity_export(scene):
+#processing
+def clean_nums(n):
+    if n.is_integer():
+        if n == -0:
+            n = 0 #for those odd cases
+        return "%s" % (n)
+    else:
+        return "%.8f" % (n)
+
+#idTechX related
+def entity_hack(file):
+    global entity_num
+
+    file.write('{\n')
+    file.write('// entity %i\n' % (entity_num))
+    entity_num = entity_num + 1
+    file.write('"classname" "info_player_start"\n')
+    file.write('"name" "info_player_start_1"\n')
+    file.write('"angle" "270"\n')
+    file.write('"origin" "0 0 32"\n');
+    file.write('}\n')
+
+def entity_export(scene, file):
     global entity_num
 
     file.write('{\n')
@@ -42,10 +64,11 @@ def brushDef3_export(scene, l_brushes, file, scale):
                 #let's scale that distance by the scale on the exporter
             dist_scaled = dist * scale
 
-            file.write('( %.16f %.16f %.16f %.16f ) ' % (normal[0], normal[1], normal[2], dist_scaled))
+            #file.write('( %.8f %.8f %.8f %.8f ) ' % (normal[0], normal[1], normal[2], dist_scaled))
+            file.write('( ' + clean_nums(normal[0]) + ' ' + clean_nums(normal[1]) + ' ' + clean_nums(normal[2]) + ' ' + clean_nums(dist_scaled) + ' )')
                 # TODO this is all idTechX needed tokens with false info
-            file.write(' ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) )') #TODO
-            file.write(' "textures/7318/concrete_01"') #TODO
+            file.write(' ( ( 0 0 0 ) ( 0 0 0 ) )') #TODO
+            file.write(' "textures/bl/dev/16x16_gray"') #TODO
             file.write(' 0 0 0\n') #TOUNDERSTANDWHATTHEHELLDOESITDO
             brush_num = brush_num + 1
         file.write('}\n') #end of "brushDef3" function
@@ -104,6 +127,7 @@ def export_map(context, filepath):
         file.write('}\n') #worldspawn end
 
     #outside the worldspawn entity it's the place for the other entities
+    entity_hack(file)
 
     print("closing file")
     file.close()
